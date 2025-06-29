@@ -1,26 +1,31 @@
 import streamlit as st
+import openai
+
+# Securely access your OpenAI API key
+openai.api_key = st.secrets["openai_api_key"]
 
 st.set_page_config(page_title="Mental Health Chatbot")
 
 st.title("🧠 Mental Health Chatbot")
-st.write("I'm here for you. Please share how you're feeling.")
+st.write("I'm here for you. Please share how you're feeling today.")
 
+# User input
 user_input = st.text_input("You:")
 
-def get_response(text):
-    text = text.lower()
-    if "happy" in text:
-        return "😊 That's wonderful! I'm so glad to hear you're feeling happy."
-    elif "sad" in text:
-        return "😔 I'm sorry you're feeling sad. Want to talk about it?"
-    elif "angry" in text or "mad" in text:
-        return "😠 It's okay to feel angry. Take a deep breath. Want to share more?"
-    elif "stressed" in text or "anxious" in text:
-        return "😟 I'm here for you. Try to take things one step at a time."
-    else:
-        return "Thank you for sharing. I'm here to listen. ❤️"
+# Generate GPT-based response
+def get_response(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a kind and supportive mental health chatbot who listens and replies with empathy."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
 
+# If user types something, generate reply
 if user_input:
-    bot_response = get_response(user_input)
-    st.write("Bot:", bot_response)
+    with st.spinner("Thinking..."):
+        reply = get_response(user_input)
+        st.write("Bot:", reply)
 
