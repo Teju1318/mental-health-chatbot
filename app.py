@@ -14,13 +14,15 @@ user_input = st.text_input("You:")
 
 # Generate GPT-based response
 def get_response(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a kind and supportive mental health chatbot who listens and replies with empathy."},
-            {"role": "user", "content": prompt}
-        ]
-    )
+   client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[{"role": "user", "content": prompt}]
+)
+
+reply = response.choices[0].message.content
+
     return response.choices[0].message.content
 
 # If user types something, generate reply
