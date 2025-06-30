@@ -1,22 +1,21 @@
 import streamlit as st
-import openai
-import os
 
-# Use the latest client API
-from openai import OpenAI
-
-# Initialize the client with your secret
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
+# Simple rule-based chatbot function
 def get_response(user_input):
-    chat_completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a supportive mental health assistant."},
-            {"role": "user", "content": user_input}
-        ]
-    )
-    return chat_completion.choices[0].message.content
+    user_input = user_input.lower()
+
+    if "sad" in user_input or "depressed" in user_input:
+        return "I'm really sorry you're feeling that way. You're not alone, and I'm here to listen. ❤️"
+    elif "happy" in user_input or "excited" in user_input:
+        return "That's wonderful to hear! 😊 Keep spreading the positivity!"
+    elif "angry" in user_input or "frustrated" in user_input:
+        return "I understand. Try taking a few deep breaths. Want to talk about what happened?"
+    elif "anxious" in user_input or "scared" in user_input:
+        return "It’s okay to feel anxious sometimes. Would you like some calming tips?"
+    elif "bye" in user_input or "thank you" in user_input:
+        return "You're always welcome. Take care of yourself! 💚"
+    else:
+        return "I'm here for you. Please tell me more about how you're feeling."
 
 # Streamlit UI
 st.set_page_config(page_title="Mental Health Chatbot")
@@ -25,7 +24,5 @@ st.markdown("I'm here for you. Please share how you're feeling today.")
 
 user_input = st.text_input("You:")
 if user_input:
-    response = get_response(user_input)
-    st.text_area("Chatbot:", value=response, height=200)
-# Minor update to trigger redeploy
-
+    reply = get_response(user_input)
+    st.text_area("Chatbot:", value=reply, height=200)
