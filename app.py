@@ -13,18 +13,15 @@ st.write("I'm here for you. Please share how you're feeling today.")
 user_input = st.text_input("You:")
 
 # Generate GPT-based response
-def get_response(prompt):
-   client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt}]
-)
-
-reply = response.choices[0].message.content
-
+def get_response(user_input):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful mental health assistant."},
+            {"role": "user", "content": user_input}
+        ]
+    )
     return response.choices[0].message.content
-
 # If user types something, generate reply
 if user_input:
     with st.spinner("Thinking..."):
