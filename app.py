@@ -1,30 +1,29 @@
 import streamlit as st
 import openai
+import os
 
-# Securely access your OpenAI API key
-openai.api_key = st.secrets["openai_api_key"]
+# Use the latest client API
+from openai import OpenAI
 
-st.set_page_config(page_title="Mental Health Chatbot")
+# Initialize the client with your secret
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-st.title("🧠 Mental Health Chatbot")
-st.write("I'm here for you. Please share how you're feeling today.")
-
-# User input
-user_input = st.text_input("You:")
-
-# Generate GPT-based response
 def get_response(user_input):
-    response = openai.ChatCompletion.create(
+    chat_completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful mental health assistant."},
+            {"role": "system", "content": "You are a supportive mental health assistant."},
             {"role": "user", "content": user_input}
         ]
     )
-    return response.choices[0].message.content
-# If user types something, generate reply
-if user_input:
-    with st.spinner("Thinking..."):
-        reply = get_response(user_input)
-        st.write("Bot:", reply)
+    return chat_completion.choices[0].message.content
 
+# Streamlit UI
+st.set_page_config(page_title="Mental Health Chatbot")
+st.title("🧠 Mental Health Chatbot")
+st.markdown("I'm here for you. Please share how you're feeling today.")
+
+user_input = st.text_input("You:")
+if user_input:
+    response = get_response(user_input)
+    st.text_area("Chatbot:", value=response, height=200)
